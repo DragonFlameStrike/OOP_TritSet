@@ -9,21 +9,20 @@ TritSet::TritSet() {
 
     size_b=0;
     capasity=0;
-}//Пустой конструктор
-TritSet::TritSet(unsigned int size){
-    size_b = size + Trit_U_Int - (size % Trit_U_Int); // выравнивание
+}
+TritSet::TritSet(unsigned int size){ 
+    size_b = size + Trit_U_Int - (size % Trit_U_Int); // alignment
     capasity = size;
 
     if(size_b > 0)
     {
-        //set = new unsigned int [size_b / Trit_U_Int]; // size_b bite
         set.reserve((size_b / Trit_U_Int));
         for(unsigned int i = 0; i < size_b / Trit_U_Int; ++i)
         {
                 set.push_back(0);
         }
     }
-}//Конструктор на size элементов
+}// fill with value Unknown
 TritSet::TritSet(const TritSet & t) {
     size_b = t.size_b;
     capasity = t.capasity;
@@ -33,21 +32,21 @@ TritSet::TritSet(const TritSet & t) {
         new_set[i] = t.set[i];
     }
     set = new_set;
-} //Конструктор копирования
+} 
 TritSet::~TritSet(){
 
     set.clear();
     size_b = 0;
     capasity = 0;
 
-} // Диструктор
+}
 unsigned int TritSet::getSize() const
 {
     return size_b;
-} //DOne
+} 
 unsigned int TritSet::getCapacity() const {
     return capasity;
-} //DOne
+} 
 unsigned int TritSet::length() const
 {
     if(!set.empty())
@@ -62,7 +61,7 @@ unsigned int TritSet::length() const
         return 0;
     }
     return 0;
-} // Done
+} // index of last F or T element 
 void TritSet::resize(size_t lastIndex)
 {
     set.resize(lastIndex/Trit_U_Int + 1,0);
@@ -73,20 +72,20 @@ void TritSet::resize(size_t lastIndex)
     else
         capasity = size_b;
 
-} //Done
+} 
 void TritSet::push(unsigned int position, Trit t)
 {
     unsigned int tmp = TrittoInt(t);
 
     if(t == Trit::T || t == Trit::F)
     {
-        if(set.empty())
+        if(set.empty()) //create 
         {
             size_b = position + Trit_U_Int - (position % Trit_U_Int);
             set.resize((size_b / Trit_U_Int),0);
 
         }
-        else if(position > size_b)
+        else if(position > size_b) //resize 
         {
             unsigned int new_size_b = position + Trit_U_Int - (position % Trit_U_Int);
             set.resize(new_size_b / Trit_U_Int,0);
@@ -94,16 +93,16 @@ void TritSet::push(unsigned int position, Trit t)
         }
     }
 
-    unsigned int sdvig = (position % Trit_U_Int)*2;
-    unsigned int mask = tmp << sdvig;
-    unsigned int res = set[position/Trit_U_Int];
-    res &= ~(0x03 << sdvig);
-    res |= mask;
+    unsigned int sdvig = (position % Trit_U_Int)*2; //2 bit on 1 trit.
+    unsigned int mask = tmp << sdvig; //choose there whold be a new trit
+    unsigned int res = set[position/Trit_U_Int]; //take an old pattern 
+    res &= ~(0x03 << sdvig); // choose a place , there  should insert 00 
+    res |= mask; //insert the value in place of those 00
     set[position/Trit_U_Int] = res;
     if(capasity<position){
         capasity=position;
     }
-} //Done
+} /
 Trit TritSet::get(unsigned int position) const
 {
     if(set.empty())
@@ -119,7 +118,7 @@ Trit TritSet::get(unsigned int position) const
     unsigned int tmp = (set[position/Trit_U_Int]  >>  sdvig) & 0x03;
     Trit res = inttoTrit(tmp);
     return res;
-} //Done
+} 
 unsigned int TritSet::cmp_size_b(TritSet const &obj) const
 {
     if(size_b > obj.size_b)
@@ -130,7 +129,7 @@ unsigned int TritSet::cmp_size_b(TritSet const &obj) const
     {
         return obj.size_b;
     }
-} //Done
+}
 unsigned int TritSet::cmp_capasity(TritSet const &obj) const
 {
     if(capasity > obj.capasity)
@@ -141,7 +140,7 @@ unsigned int TritSet::cmp_capasity(TritSet const &obj) const
     {
         return obj.capasity;
     }
-} //Done
+}
 TritSet TritSet::operator&(const TritSet &obj)const
 {
     unsigned int size = obj.cmp_capasity(*this);
@@ -151,7 +150,7 @@ TritSet TritSet::operator&(const TritSet &obj)const
         tmp.push(i, this->get(i) & obj.get(i));
     }
     return tmp;
-} //Done
+}
 TritSet TritSet::operator|(const TritSet &obj) const
 {
     unsigned int size = obj.cmp_capasity(*this);
@@ -161,7 +160,7 @@ TritSet TritSet::operator|(const TritSet &obj) const
         tmp.push(i, get(i) | obj.get(i));
     }
     return tmp;
-} //Done
+} 
 TritSet TritSet::operator!() const
 {
     TritSet tmp(capasity);
@@ -170,7 +169,7 @@ TritSet TritSet::operator!() const
         tmp.push(i,!(this->get(i)));
     }
     return tmp;
-} //Done
+}
 bool TritSet::operator==(const TritSet&obj) const
 {
     if(this->length() != obj.length())
@@ -188,7 +187,7 @@ bool TritSet::operator==(const TritSet&obj) const
         }
     }
     return true;
-} //Done
+} 
 bool TritSet::operator!=(const TritSet&obj) const
 {
     if(this->length() != obj.length())
@@ -206,7 +205,7 @@ bool TritSet::operator!=(const TritSet&obj) const
         }
     }
     return false;
-} //Done
+} 
 TritSet& TritSet::operator=(TritSet const & t) {
     if (this == &t)
     {
@@ -226,18 +225,18 @@ TritSet& TritSet::operator=(TritSet const & t) {
     set = new_set;
 
     return *this;
-} //Done
+} 
 Trit TritSet::operator[](unsigned int i) const
 {
     return get(i);
-} //Done
+} 
 ProxyTrit TritSet::operator[](unsigned int i)
 {
     ProxyTrit m(*this, i);
     Trit t = get(i);
     m = t;
     return m;
-} //Done
+} 
 std::ostream &operator <<(std:: ostream &out, const Trit &t)
 {
     switch(t)
@@ -255,7 +254,7 @@ std::ostream &operator <<(std:: ostream &out, const Trit &t)
             out << "U";
     }
     return out;
-} //Done
+} 
 std::ostream &operator <<(std:: ostream &out, const TritSet &t)
 {
     for(unsigned int i = 0; i < t.getSize(); i++)
@@ -274,12 +273,12 @@ std::ostream &operator <<(std:: ostream &out, const TritSet &t)
     }
 
     return out;
-} //Done
+}
 
 
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    //some examples
     TritSet set(8);
     TritSet other_set(16);
     TritSet empty_set;
@@ -314,7 +313,7 @@ int main() {
     std::cout<<"set|other_set\t" <<big_set<<std::endl;
     big_set=set&other_set;
     std::cout<<"set&other_set\t" <<big_set<<std::endl;
-
+    
 
 
 
