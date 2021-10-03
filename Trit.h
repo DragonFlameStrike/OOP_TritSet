@@ -9,7 +9,7 @@
 
 enum class Trit
 {
-    F, U, T
+    F, U, T //0 1 2
 };
 
 unsigned int TrittoInt(Trit a);
